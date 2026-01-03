@@ -1,0 +1,158 @@
+tests.html
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>NSG ESPORTS | Rapid Target Clash</title>
+
+<style>
+body{
+  margin:0;
+  font-family:Arial;
+  background:#000;
+  color:white;
+  text-align:center;
+}
+
+h1{color:#ff5e00}
+button{
+  padding:12px 22px;
+  background:#ff5e00;
+  border:none;
+  border-radius:6px;
+  font-weight:bold;
+  margin:5px;
+}
+button:hover{box-shadow:0 0 15px #ff5e00}
+
+#arena{
+  display:none;
+  margin:20px auto;
+  width:320px;
+  display:flex;
+  justify-content:space-between;
+}
+
+.target{
+  width:90px;
+  height:90px;
+  border-radius:50%;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  font-weight:bold;
+  font-size:18px;
+  cursor:pointer;
+  transition: all 0.2s ease;
+}
+
+.red{background:#ff0033; color:white; box-shadow:0 0 10px #ff0033;}
+.yellow{background:#ffaa00; color:black; box-shadow:0 0 10px #ffaa00;}
+.black{background:#111; border:2px solid #444; color:white;}
+
+/* NEON TAP EFFECT */
+@keyframes neonTap{
+  0% {transform: scale(1); box-shadow:0 0 10px #fff;}
+  50% {transform: scale(1.3); box-shadow:0 0 25px #0ff,0 0 50px #0ff;}
+  100% {transform: scale(1); box-shadow:0 0 10px #fff;}
+}
+.tap{
+  animation: neonTap 0.3s ease forwards;
+}
+</style>
+</head>
+
+<body>
+
+<h1>Rapid Target Clash</h1>
+<p>Tap the HIGHEST value target</p>
+
+<button onclick="startGame()">Start Game</button>
+
+<h2 id="info"></h2>
+
+<div id="arena">
+  <div class="target" onclick="hit(0)"></div>
+  <div class="target" onclick="hit(1)"></div>
+  <div class="target" onclick="hit(2)"></div>
+</div>
+
+<h2 id="final"></h2>
+
+<button onclick="submit()">Submit Score</button>
+
+<script>
+let score=0, time=30, correctIndex=0, gameTimer, roundTimer;
+const arena=document.getElementById("arena");
+const targets=document.querySelectorAll(".target");
+
+function startGame(){
+  score=0; time=30;
+  arena.style.display="flex";
+  nextRound();
+  update();
+
+  gameTimer=setInterval(()=>{
+    time--;
+    update();
+    if(time<=0) endGame();
+  },1000);
+}
+
+function nextRound(){
+  let values=[10,5,-5];
+  values.sort(()=>Math.random()-0.5);
+  correctIndex=values.indexOf(Math.max(...values));
+
+  targets.forEach((t,i)=>{
+    t.className="target";
+    t.classList.add(values[i]===10?"red":values[i]===5?"yellow":"black");
+    t.innerText=values[i];
+  });
+
+  clearTimeout(roundTimer);
+  roundTimer=setTimeout(nextRound,1500);
+}
+
+function hit(i){
+  // Neon tap effect
+  targets[i].classList.add("tap");
+  setTimeout(()=>targets[i].classList.remove("tap"),300);
+
+  if(i===correctIndex){
+    score+=10;
+  }else{
+    score=Math.max(0,score-5);
+  }
+  nextRound();
+  update();
+}
+
+function update(){
+  info.innerText=`Time: ${time}s | Score: ${score}`;
+}
+
+function endGame(){
+  clearInterval(gameTimer);
+  clearTimeout(roundTimer);
+  arena.style.display="none";
+  final.innerText=`Final Score: ${score}`;
+  localStorage.setItem("rapidResult",score);
+}
+
+function submit(){
+  let result=localStorage.getItem("rapidResult");
+  if(!result){alert("Play first"); return;}
+
+  fetch("https://formspree.io/f/FORM_ID_HERE",{
+    method:"POST",
+    headers:{'Content-Type':'application/json'},
+    body:JSON.stringify({score:result,game:"Rapid Target Clash"})
+  }).catch(()=>{});
+
+  alert("Score submitted to NSG Admin!");
+}
+</script>
+
+</body>
+</html>
