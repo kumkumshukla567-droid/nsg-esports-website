@@ -1,0 +1,183 @@
+login.html
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>NSG ESPORTS | Admin Login</title>
+<style>
+/* GLOBAL */
+body{
+  margin:0;
+  font-family:Arial;
+  background:#000;
+  color:white;
+  text-align:center;
+  overflow-x:hidden;
+}
+
+/* LOADER */
+#loader{
+  position:fixed; inset:0;
+  display:flex; justify-content:center; align-items:center;
+  background:#050505;
+  z-index:9999;
+}
+.loader-ring{
+  width:70px;height:70px;
+  border:4px solid #222;
+  border-top:4px solid #ff5e00;
+  border-radius:50%;
+  animation:spin 1s linear infinite;
+}
+@keyframes spin{to{transform:rotate(360deg);}}
+
+/* BACKGROUND PARTICLES */
+#bg{
+  position:fixed;
+  inset:0;
+  z-index:-1;
+  background:#000;
+}
+.particle{
+  position:absolute;
+  width:4px; height:4px;
+  background:#ff5e00;
+  border-radius:50%;
+  opacity:0.8;
+}
+
+/* CONTAINER */
+.container{
+  max-width:350px;
+  margin:100px auto;
+  background:#0a0a0a;
+  padding:30px;
+  border-radius:15px;
+  box-shadow:0 0 25px #ff5e00;
+}
+h1{
+  color:#ff5e00;
+  margin-bottom:20px;
+  text-shadow:0 0 15px #ff5e00;
+}
+
+/* FORM */
+input{
+  width:100%;
+  padding:12px;
+  margin:10px 0;
+  border:none;
+  border-radius:8px;
+  background:#111;
+  color:white;
+  transition:0.3s;
+}
+input:focus{
+  outline:none;
+  box-shadow:0 0 12px #ff5e00;
+}
+
+button{
+  width:100%;
+  padding:15px;
+  margin-top:12px;
+  background:#ff5e00;
+  border:none;
+  border-radius:10px;
+  font-weight:bold;
+  cursor:pointer;
+  transition:0.3s;
+  box-shadow:0 0 10px #ff5e00;
+}
+button:hover{
+  box-shadow:0 0 25px #ff5e00,0 0 50px #ff9a3d;
+  transform:scale(1.05);
+}
+
+/* STATUS TEXT */
+#status{
+  margin-top:12px;
+  color:#ff5e00;
+  font-weight:bold;
+}
+
+/* NEON GLOW */
+.glow{
+  animation:glowPulse 1.2s infinite;
+}
+@keyframes glowPulse{
+  0%{box-shadow:0 0 5px #ff5e00;}
+  50%{box-shadow:0 0 20px #ff5e00,0 0 40px #ff9a3d;}
+  100%{box-shadow:0 0 5px #ff5e00;}
+}
+</style>
+</head>
+<body>
+
+<!-- LOADER -->
+<div id="loader"><div class="loader-ring"></div></div>
+
+<!-- BACKGROUND PARTICLES -->
+<div id="bg"></div>
+
+<div class="container glow">
+  <h1>NSG ESPORTS Admin Login</h1>
+  <form id="loginForm">
+    <input type="password" id="pin" placeholder="Enter Admin PIN" required>
+    <button type="submit">Login</button>
+  </form>
+  <div id="status"></div>
+</div>
+
+<script>
+/* LOADER */
+window.onload=()=>document.getElementById("loader").style.display="none";
+
+/* BACKGROUND PARTICLES */
+const bg=document.getElementById("bg");
+let particles=[];
+for(let i=0;i<80;i++){
+  let p=document.createElement("div");
+  p.className="particle";
+  p.style.left=Math.random()*window.innerWidth+"px";
+  p.style.top=Math.random()*window.innerHeight+"px";
+  p.style.width=p.style.height=(Math.random()*4+2)+"px";
+  bg.appendChild(p);
+  particles.push({el:p,x:p.offsetLeft,y:p.offsetTop,vx:(Math.random()-0.5),vy:(Math.random()-0.5)});
+}
+function animateParticles(){
+  particles.forEach(p=>{
+    p.x+=p.vx; p.y+=p.vy;
+    if(p.x<0)p.x=window.innerWidth;
+    if(p.y<0)p.y=window.innerHeight;
+    if(p.x>window.innerWidth)p.x=0;
+    if(p.y>window.innerHeight)p.y=0;
+    p.el.style.left=p.x+"px";
+    p.el.style.top=p.y+"px";
+  });
+  requestAnimationFrame(animateParticles);
+}
+animateParticles();
+
+/* LOGIN LOGIC */
+const form=document.getElementById("loginForm");
+const status=document.getElementById("status");
+
+/* CHANGE THIS PIN */
+const ADMIN_PIN="1234";
+
+form.addEventListener("submit",e=>{
+  e.preventDefault();
+  let entered=document.getElementById("pin").value;
+  if(entered===ADMIN_PIN){
+    status.innerText="Access Granted! Redirecting...";
+    setTimeout(()=>{window.location.href="admin.html";},1000);
+  }else{
+    status.innerText="Incorrect PIN!";
+    document.getElementById("pin").value="";
+  }
+});
+</script>
+
+</body>
+</html>
