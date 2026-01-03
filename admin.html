@@ -1,0 +1,249 @@
+admin.html
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>NSG ESPORTS | Admin Dashboard</title>
+
+<style>
+body{
+  margin:0;
+  font-family:Arial,Helvetica,sans-serif;
+  color:white;
+  background:#000;
+}
+
+/* ===== LOADER ===== */
+#loader{
+  position:fixed;
+  inset:0;
+  background:#050505;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  z-index:9999;
+}
+.loader-ring{
+  width:80px;height:80px;
+  border:4px solid #222;
+  border-top:4px solid #ff5e00;
+  border-radius:50%;
+  animation:spin 1s linear infinite;
+}
+@keyframes spin{to{transform:rotate(360deg);}}
+
+/* ===== BACKGROUND ===== */
+#bgCanvas{
+  position:fixed;
+  inset:0;
+  z-index:-1;
+  background:#0b0b0b;
+}
+
+/* ===== LAYOUT ===== */
+.sidebar{
+  width:220px;
+  height:100vh;
+  position:fixed;
+  background:#111;
+  padding:20px;
+}
+.sidebar h2{color:#ff5e00;}
+.sidebar a{
+  display:block;
+  color:white;
+  padding:10px;
+  text-decoration:none;
+  margin-top:5px;
+}
+.sidebar a:hover{
+  background:#ff5e00;
+  color:black;
+  box-shadow:0 0 15px #ff5e00;
+}
+
+/* ===== MAIN ===== */
+.main{
+  margin-left:240px;
+  padding:20px;
+  animation:fadeIn 0.7s ease;
+}
+@keyframes fadeIn{
+  from{opacity:0;transform:translateY(10px)}
+  to{opacity:1}
+}
+
+/* ===== STATS ===== */
+.stats{
+  display:grid;
+  grid-template-columns:repeat(auto-fit,minmax(200px,1fr));
+  gap:20px;
+}
+.card{
+  background:#111;
+  padding:20px;
+  border-radius:10px;
+  box-shadow:0 0 15px rgba(255,94,0,0.3);
+  transition:0.3s;
+}
+.card:hover{
+  transform:translateY(-5px);
+  box-shadow:0 0 25px #ff5e00;
+}
+.card h3{color:#ff5e00;}
+
+/* ===== PLAYER CARDS ===== */
+.players{
+  margin-top:30px;
+  display:grid;
+  grid-template-columns:repeat(auto-fit,minmax(220px,1fr));
+  gap:20px;
+}
+.player{
+  background:#0f0f0f;
+  padding:15px;
+  border-radius:10px;
+  text-align:center;
+  transition:0.3s;
+}
+.player:hover{
+  box-shadow:0 0 25px #ff5e00;
+  transform:scale(1.05);
+}
+.role{
+  color:#ff5e00;
+  font-size:14px;
+}
+
+/* ===== EXIT ===== */
+.exit{
+  background:#c0392b;
+  padding:10px;
+  border:none;
+  border-radius:5px;
+  color:white;
+  cursor:pointer;
+  margin-top:20px;
+}
+.exit:hover{
+  box-shadow:0 0 15px red;
+}
+</style>
+</head>
+
+<body>
+
+<!-- LOADER -->
+<div id="loader">
+  <div class="loader-ring"></div>
+</div>
+
+<!-- BACKGROUND -->
+<canvas id="bgCanvas"></canvas>
+
+<!-- SIDEBAR -->
+<div class="sidebar">
+  <h2>NSG ADMIN</h2>
+  <a href="#">Dashboard</a>
+  <a href="#">Players</a>
+  <a href="#">Stats</a>
+  <button class="exit" onclick="exitSite()">Exit</button>
+</div>
+
+<!-- MAIN -->
+<div class="main">
+
+<h1>NSG ESPORTS DASHBOARD</h1>
+
+<!-- STATS -->
+<div class="stats">
+  <div class="card">
+    <h3>Total Kills</h3>
+    <h1 class="count" data-target="1248">0</h1>
+  </div>
+  <div class="card">
+    <h3>Total Matches</h3>
+    <h1 class="count" data-target="312">0</h1>
+  </div>
+  <div class="card">
+    <h3>Avg KD</h3>
+    <h1 class="count" data-target="3.8">0</h1>
+  </div>
+  <div class="card">
+    <h3>Rifle Players</h3>
+    <h1 class="count" data-target="12">0</h1>
+  </div>
+</div>
+
+<!-- PLAYERS -->
+<h2 style="margin-top:40px;color:#ff5e00;">Rifle Players</h2>
+<div class="players">
+  <div class="player">
+    <h3>NSG Alpha</h3>
+    <p class="role">Rifle Player</p>
+    <p>Kills: 420</p>
+  </div>
+  <div class="player">
+    <h3>NSG Blaze</h3>
+    <p class="role">Rifle Player</p>
+    <p>Kills: 390</p>
+  </div>
+  <div class="player">
+    <h3>NSG Viper</h3>
+    <p class="role">Rifle Player</p>
+    <p>Kills: 438</p>
+  </div>
+</div>
+
+</div>
+
+<!-- SCRIPT -->
+<script>
+/* LOADER */
+window.onload=()=>document.getElementById("loader").style.display="none";
+
+/* EXIT */
+function exitSite(){
+  window.location.href="index.html";
+}
+
+/* COUNT ANIMATION */
+document.querySelectorAll('.count').forEach(counter=>{
+  let target=+counter.dataset.target;
+  let current=0;
+  let inc=target/80;
+  function update(){
+    current+=inc;
+    if(current<target){
+      counter.innerText=current.toFixed(1);
+      requestAnimationFrame(update);
+    }else{
+      counter.innerText=target;
+    }
+  }
+  update();
+});
+
+/* BACKGROUND */
+const c=document.getElementById("bgCanvas"),x=c.getContext("2d");
+function r(){c.width=innerWidth;c.height=innerHeight}
+window.onresize=r;r();
+let p=[];
+for(let i=0;i<120;i++)p.push({x:Math.random()*c.width,y:Math.random()*c.height,vx:(Math.random()-0.5),vy:(Math.random()-0.5)});
+function a(){
+  x.clearRect(0,0,c.width,c.height);
+  p.forEach(o=>{
+    o.x+=o.vx;o.y+=o.vy;
+    if(o.x<0)o.x=c.width;if(o.y<0)o.y=c.height;
+    if(o.x>c.width)o.x=0;if(o.y>c.height)o.y=0;
+    x.beginPath();x.arc(o.x,o.y,2,0,7);
+    x.fillStyle="rgba(255,90,0,0.8)";
+    x.fill();
+  });
+  requestAnimationFrame(a);
+}
+a();
+</script>
+
+</body>
+</html>
